@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"yahfiilham/go-rest-api/app"
 	"yahfiilham/go-rest-api/controller"
+	"yahfiilham/go-rest-api/exception"
 	"yahfiilham/go-rest-api/helper"
+	"yahfiilham/go-rest-api/middleware"
 	"yahfiilham/go-rest-api/repository"
 	"yahfiilham/go-rest-api/service"
 
@@ -29,9 +31,11 @@ func main() {
 	router.PUT("/api/categories/:categoryId", categoryController.Update)
 	router.DELETE("/api/categories/:categoryId", categoryController.Delete)
 
+	router.PanicHandler = exception.ErrorHandler
+
 	server := http.Server{
 		Addr: "localhost:3000",
-		Handler: router,
+		Handler: middleware.NewAuthMiddleware(router),
 	}
 
 	err := server.ListenAndServe()
